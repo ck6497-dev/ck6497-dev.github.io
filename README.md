@@ -11,7 +11,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .card-shadow { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        
+        /* [가이드 준수 3] 정렬 안정화 - 텍스트 줄바꿈 방지 */
         .status-pill { padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .nowrap-text { white-space: nowrap; }
+
         .detail-row { display: none; background-color: #fefce8; }
         .detail-row.active { display: table-row; }
         #toast { visibility: hidden; min-width: 250px; background-color: #1e293b; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); }
@@ -19,12 +23,21 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         
-        /* Table Layout Fixes */
-        .table-fixed-layout { table-layout: fixed; min-width: 800px; }
+        /* [가이드 준수 1 & 2] 너비 고정 및 반응형 스크롤 */
+        .table-fixed-layout { 
+            table-layout: fixed; /* 컬럼 너비 엄격 고정 */
+            min-width: 800px;    /* 모바일에서 찌그러짐 방지 최소 너비 */
+            width: 100%; 
+        }
         .col-route { width: 35%; }
         .col-status { width: 20%; }
         .col-lt { width: 25%; }
         .col-insight { width: 20%; }
+
+        /* 스크롤바 디자인 (선택사항) */
+        .overflow-x-auto::-webkit-scrollbar { height: 6px; }
+        .overflow-x-auto::-webkit-scrollbar-track { background: #f1f5f9; }
+        .overflow-x-auto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -184,8 +197,10 @@
             </div>
 
             <div class="bg-white rounded-3xl card-shadow border border-slate-100 overflow-hidden">
+                <!-- [가이드 준수 2] 부모 컨테이너에 overflow-x-auto 적용 -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left table-fixed-layout">
+                    <!-- [가이드 준수 1] table-layout: fixed 및 min-width: 800px 적용 -->
+                    <table class="table-fixed-layout text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th class="col-route px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Route (Port)</th>
@@ -212,19 +227,14 @@
 
     <script>
         const portData = [
-            // 동남아/서남아 (6)
             { id: "p1", name: "Port Kelang", country: "Malaysia", region: "sea", status: "Caution", lt: "10-14일", detail: "춘절 전 물량 집중으로 선복 확보가 어렵습니다. 포트 클랑은 환적 허브로서 야드 밀도가 높으나, 터미널 운영은 비교적 안정적입니다." },
             { id: "p2", name: "MANILA", country: "Philippines", region: "sea", status: "Normal", lt: "5-9일", detail: "마닐라 북항과 남항 모두 운영이 원활합니다. 다만, 필리핀의 경우 연초 수입 통관 강화 이슈가 간헐적으로 발생하므로 서류 준비에 만전을 기해야 합니다." },
             { id: "p3", name: "BANGKOK", country: "Thailand", region: "sea", status: "Caution", lt: "12-16일", detail: "방콕항은 주로 람차방을 경유합니다. 현재 람차방의 환적 물량 증가로 바지선 연결이 지연될 수 있습니다." },
             { id: "p4", name: "SIHANOUKVILLE", country: "Cambodia", region: "sea", status: "Caution", lt: "14-18일", detail: "환적 서비스가 주를 이루며, 환적항에서의 연결 지연 리스크를 고려해야 합니다." },
             { id: "p5", name: "JAKARTA", country: "Indonesia", region: "sea", status: "Caution", lt: "10-15일", detail: "춘절 앞두고 원부자재 수입 급증으로 자카르타 탄중 프리옥 혼잡도 상승. 세관 'Red Line' 검사 비율이 높아질 수 있습니다." },
             { id: "p6", name: "SINGAPORE", country: "Singapore", region: "sea", status: "Normal", lt: "7-10일", detail: "환적 허브로서 효율적인 운영을 유지하고 있으나, 춘절 전 환적 화물 폭증으로 야드 적체율은 높은 편입니다." },
-
-            // 오세아니아 (2)
             { id: "p7", name: "MELBOURNE", country: "Australia", region: "oceania", status: "Critical", lt: "18-28일(+)", detail: "DP World/Patrick 파업으로 선박 체선 심각. 선사들이 기항을 건너뛰는 경우가 빈번하므로 스케줄 변동 공지를 반드시 확인하십시오." },
             { id: "p8", name: "AUCKLAND", country: "New Zealand", region: "oceania", status: "Caution", lt: "20-30일", detail: "호주 항만 파업 여파가 오클랜드 향 서비스 지연으로 직결되고 있습니다. 호주 미경유 직항 서비스 우선 확보를 권장합니다." },
-
-            // 북미/남미 (8)
             { id: "p9", name: "VANCOUVER", country: "Canada", region: "na", status: "Caution", lt: "14-20일", detail: "터미널 내 철도 조차장 혼잡이 문제입니다. 로컬 화물이라도 터미널 반출 속도가 느려질 수 있습니다." },
             { id: "p10", name: "MISSISSAUGA (Rail)", country: "Canada (Toronto)", region: "na", status: "Critical", lt: "35-50일", detail: "밴쿠버발 철송 지연(평균 7.7일)과 혹한으로 인한 철도 운행 속도 저하가 겹쳐 전체 LT 예측이 어렵습니다." },
             { id: "p11", name: "MISSISSAUGA (Truck)", country: "Canada (Vancouver)", region: "na", status: "Critical", lt: "25-35일", detail: "밴쿠버발 장거리 트럭킹 루트입니다. 겨울철 로키 산맥 기상 악화로 도로 폐쇄 위험이 매우 높고 비용이 상승 중입니다." },
@@ -233,20 +243,14 @@
             { id: "p14", name: "NEW YORK", country: "USA", region: "na", status: "Caution", lt: "28-40일", detail: "파나마 운하 제한 및 수에즈 운하 우회(희망봉)로 인해 리드타임 편차가 매우 큽니다." },
             { id: "p15", name: "SAVANNAH", country: "USA", region: "na", status: "Caution", lt: "30-38일", detail: "아시아 발 화물 집중으로 Vessel Bunching 현상 발생 시 하역 지연 리스크가 존재합니다." },
             { id: "p16", name: "VITORIA", country: "Brazil", region: "na", status: "Normal", lt: "35-45일", detail: "브라질 주요 항만 중 산토스에 비해 혼잡도가 낮습니다. 다만 부산발 직항이 드물어 환적항 스케줄 확인이 필요합니다." },
-
-            // 동아시아 (5)
             { id: "p17", name: "KAOHSIUNG", country: "Taiwan", region: "ea", status: "Normal", lt: "3-5일", detail: "대만 주요 환적항으로 운영이 안정적입니다. 부산발 서비스 빈도가 높아 스페이스 확보가 용이합니다." },
             { id: "p18", name: "KEELUNG", country: "Taiwan", region: "ea", status: "Normal", lt: "3-5일", detail: "타이베이 인근 항만으로, 원활한 흐름을 보이고 있습니다." },
             { id: "p19", name: "HONG KONG", country: "Hong Kong", region: "ea", status: "Normal", lt: "3-5일", detail: "춘절 전 중국 주강삼각주 바지선 피더 네트워크 지연이 발생할 수 있습니다." },
             { id: "p20", name: "YOKOHAMA", country: "Japan", region: "ea", status: "Normal", lt: "2-4일", detail: "매우 안정적인 루트입니다. 특이사항 없습니다." },
             { id: "p21", name: "HAKATA", country: "Japan", region: "ea", status: "Normal", lt: "1-2일", detail: "페리 서비스를 이용할 경우 당일/익일 통관이 가능할 정도로 빠릅니다. 긴급 화물 처리에 최적입니다." },
-
-            // 유럽/지중해 (3)
             { id: "p22", name: "SOUTHAMPTON", country: "UK", region: "eu", status: "Caution", lt: "40-50일", detail: "겨울철 기상 악화(강풍 등)로 인한 간헐적 운영 중단 및 희망봉 우회로 인한 LT 장기화 리스크가 있습니다." },
             { id: "p23", name: "ROTTERDAM", country: "Netherlands", region: "eu", status: "Caution", lt: "38-48일", detail: "겨울 폭풍 여파로 터미널 효율 저하. 바지선 및 피더선의 대기 시간이 길어져 환적 화물의 지연이 불가피합니다." },
             { id: "p24", name: "ISTANBUL", country: "Turkey", region: "eu", status: "Normal", lt: "35-45일", detail: "이스탄불 암바리 항만은 현재 큰 혼잡 없이 운영 중입니다. Middle Corridor의 중요성이 커지고 있습니다." },
-
-            // 러시아/CIS (9)
             { id: "p25", name: "TOSHKENT", country: "Uzbekistan", region: "cis", status: "Caution", lt: "30-45일", detail: "중국 경유 TCR 루트. 중국-카자흐 국경 화차 교환 및 환적 작업 병목으로 국경 통과에 7~10일 소요됩니다." },
             { id: "p26", name: "BISHKEK (TCR)", country: "Kyrgyzstan", region: "cis", status: "Caution", lt: "35-50일", detail: "동절기 폭설 시 산악 지형 국경 폐쇄 빈번. 동절기에는 추가적인 리드타임 확보가 필수적입니다." },
             { id: "p27", name: "VLADIVOSTOK", country: "Russia", region: "cis", status: "Caution", lt: "2-5일", detail: "제재 준수(Sanctions Compliance)가 최우선입니다. 한국 세관의 전략물자 통제가 강화되어 서류 심사가 까다롭습니다." },
@@ -270,6 +274,7 @@
                 if(port.status === "Caution") statusClass = "bg-amber-100 text-amber-700";
                 if(port.status === "Critical") statusClass = "bg-red-100 text-red-700";
 
+                // [가이드 준수 3] 텍스트 줄바꿈 방지 클래스(nowrap-text) 적용
                 tr.innerHTML = `
                     <td class="px-8 py-5 col-route">
                         <div class="font-bold text-slate-800 leading-tight truncate" title="${port.name}">${port.name}</div>
@@ -279,7 +284,7 @@
                         <span class="status-pill ${statusClass}">${port.status}</span>
                     </td>
                     <td class="px-8 py-5 col-lt">
-                        <span class="text-sm text-slate-600 font-semibold whitespace-nowrap">${port.lt}</span>
+                        <span class="text-sm text-slate-600 font-semibold nowrap-text">${port.lt}</span>
                     </td>
                     <td class="px-8 py-5 col-insight text-center">
                         <i class="fas fa-chevron-down text-slate-300 group-hover:text-amber-500 transition-all"></i>
@@ -334,7 +339,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Logistics_Expert_Dashboard_Jan2026_Updated.html';
+            a.download = 'Logistics_Expert_Dashboard_Jan2026_Static.html';
             a.click();
             URL.revokeObjectURL(url);
             showToast();
